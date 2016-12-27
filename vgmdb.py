@@ -114,7 +114,11 @@ class VGMdbPlugin(BeetsPlugin):
 	catalognum = item["catalog"]
 
 	# Get Artist information
-	artist_type = "preformers" if item.has_key("preformers") else "composers"
+        if item.has_key("performers") and len(item["performers"]) > 0:
+            artist_type = "performers"
+        else:
+            artist_type = "composers"
+
 	artists = []
 	for artist in item[artist_type]:
 	    if artist["names"].has_key(self.lang[0]):
@@ -137,10 +141,10 @@ class VGMdbPlugin(BeetsPlugin):
 
                 if track["names"].has_key("English"):
                     title = track["names"]["English"]
-                elif track["names"]["Romaji"]:
+                elif track["names"].has_key("Romaji"):
                     title = track["names"]["Romaji"]
                 else:
-                    title = track["names"]["Japanese"]
+                    title = track["names"].values()[0]
 
                 index = total_index
 
