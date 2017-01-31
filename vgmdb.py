@@ -49,15 +49,15 @@ class VGMdbPlugin(BeetsPlugin):
         """
         log.debug('Querying VGMdb for release %s' % str(album_id))
 
-	# Get from VGMdb
+        # Get from VGMdb
         r = requests.get('http://vgmdb.info/album/%s?format=json' % str(album_id))
 
-	# Decode Response's content
-	try:
-	    item = r.json()
-	except:
-	    log.debug('VGMdb JSON Decode Error: (id: %s)' % album_id)
-	    return None
+        # Decode Response's content
+        try:
+            item = r.json()
+        except:
+            log.debug('VGMdb JSON Decode Error: (id: %s)' % album_id)
+            return None
 
         return self.get_album_info(item, False)
 
@@ -73,20 +73,20 @@ class VGMdbPlugin(BeetsPlugin):
         # can also negate an otherwise positive result.
         query = re.sub(r'(?i)\b(CD|disc)\s*\d+', '', query)
 
-	# Query VGMdb
-	r = requests.get('http://vgmdb.info/search/albums/%s?format=json' % query)
-	albums = []
+        # Query VGMdb
+        r = requests.get('http://vgmdb.info/search/albums/%s?format=json' % query)
+        albums = []
 
-	# Decode Response's content
- 	try:
-	    items = r.json()
-	except:
-	    log.debug('VGMdb JSON Decode Error: (query: %s)' % query)
-	    return albums
+        # Decode Response's content
+        try:
+            items = r.json()
+        except:
+            log.debug('VGMdb JSON Decode Error: (query: %s)' % query)
+            return albums
 
-	# Break up and get search results
+        # Break up and get search results
         for item in items["results"]["albums"]:
-	    album_id = str(self.decod(item["link"][6:]))
+            album_id = str(self.decod(item["link"][6:]))
             albums.append(self.album_for_id(album_id))
             if len(albums) >= 5:
                 break
@@ -103,26 +103,26 @@ class VGMdbPlugin(BeetsPlugin):
         """Convert json data into a format beets can read
         """
 
-	# If a preferred lang is available use that instead
-	album_name = item["name"]
-	for lang in self.lang:
+        # If a preferred lang is available use that instead
+        album_name = item["name"]
+        for lang in self.lang:
             if item["names"].has_key(lang):
-	        album_name = item["names"][lang]
+                album_name = item["names"][lang]
 
         album_id = item["link"][6:]
         country = "JP"
-	catalognum = item["catalog"]
+        catalognum = item["catalog"]
 
-	# Get Artist information
+        # Get Artist information
         if item.has_key("performers") and len(item["performers"]) > 0:
             artist_type = "performers"
         else:
             artist_type = "composers"
 
-	artists = []
-	for artist in item[artist_type]:
-	    if artist["names"].has_key(self.lang[0]):
-	        artists.append(artist["names"][self.lang[0]])
+        artists = []
+        for artist in item[artist_type]:
+            if artist["names"].has_key(self.lang[0]):
+                artists.append(artist["names"][self.lang[0]])
             else:
                 artists.append(artist["names"]["ja"])
 
@@ -132,9 +132,9 @@ class VGMdbPlugin(BeetsPlugin):
         else:
             artist_id = None
 
-	# Get Track metadata
+        # Get Track metadata
         Tracks = []
-	total_index = 0
+        total_index = 0
         for disc_index, disc in enumerate(item["discs"]):
             for track_index, track in enumerate(disc["tracks"]):
                 total_index += 1
@@ -155,12 +155,12 @@ class VGMdbPlugin(BeetsPlugin):
                     length = (float(length[0]) * 60) + float(length[1])
 
                 media = item["media_format"]
-		medium = disc_index
+                medium = disc_index
                 medium_index = track_index
                 new_track = TrackInfo(
                     title,
                     int(index),
-		    length=float(length),
+                    length=float(length),
                     index=int(index),
                     medium=int(medium),
                     medium_index=int(medium_index),
@@ -168,8 +168,8 @@ class VGMdbPlugin(BeetsPlugin):
                     )
                 Tracks.append(new_track)
 
-	# Format Album release date
-	release_date = item["release_date"].split("-")
+        # Format Album release date
+        release_date = item["release_date"].split("-")
         year  = release_date[0]
         month = release_date[1]
         day   = release_date[2]
