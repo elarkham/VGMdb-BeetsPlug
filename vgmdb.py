@@ -14,7 +14,7 @@ class VGMdbPlugin(BeetsPlugin):
     def __init__(self):
         super(VGMdbPlugin, self).__init__()
         self.config.add({
-            'source_weight': 1.0,
+            'source_weight': 0.0,
             'lang-priority': 'en, ja-latn'
         })
         log.debug('Querying VGMdb')
